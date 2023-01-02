@@ -1,11 +1,15 @@
 ---
-title: "Home"
+title: "The Analysis Starts Here"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
-    toc: false
+    toc: true
 editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Welcome to my website where I develop the research workflows for the EXEBUS Marine Heatwave (MHW), Marine Cold Spell (MCS), and Extreme Thermal Fluctuations (ETF) analysis.
+
+# Sourcing and downloading data
+
+Here I will describe the steps taken to acquire the data used in the ensuing analyses.

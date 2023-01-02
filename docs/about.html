@@ -281,7 +281,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -292,8 +292,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -306,9 +306,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>EXEBUS_MHW/</code> <span
@@ -331,31 +331,36 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongcac6b98">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtreea61dd4aa57be8686f7e94ff8a32fdd3defa7bd26targetblanka61dd4aa">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> cac6b98
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/a61dd4aa57be8686f7e94ff8a32fdd3defa7bd26" target="_blank">a61dd4a</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongcac6b98"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtreea61dd4aa57be8686f7e94ff8a32fdd3defa7bd26targetblanka61dd4aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -364,7 +369,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version cac6b98.
+The results in this page were generated with repository version
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/a61dd4aa57be8686f7e94ff8a32fdd3defa7bd26" target="_blank">a61dd4a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -378,7 +384,14 @@ depends on. Below is the status of the Git repository when the results
 were generated:
 </p>
 <pre><code>
-working directory clean
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   analysis/about.Rmd
+    Modified:   analysis/index.Rmd
+
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -424,10 +437,27 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajsmit/EXEBUS_MHW/a61dd4aa57be8686f7e94ff8a32fdd3defa7bd26/docs/about.html" target="_blank">a61dd4a</a>
+</td>
+<td>
+ajsmit
+</td>
+<td>
+2023-01-02
+</td>
+<td>
+Site commit.
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
-cac6b98
+<a href="https://github.com/ajsmit/EXEBUS_MHW/blob/cac6b98cc8b57ce03d3367cef2b2d349b2f9fd73/analysis/about.Rmd" target="_blank">cac6b98</a>
 </td>
 <td>
 ajsmit
@@ -446,7 +476,7 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>Describe your project.</p>
+<p>This project supports and EXEBUS case study.</p>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
