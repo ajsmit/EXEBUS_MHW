@@ -15,7 +15,7 @@
 
 <title>Visualising spatial patterns</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -37,8 +37,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.2.1/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.2.1/css/v4-shims.min.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -369,7 +369,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -380,8 +380,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -394,9 +394,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>EXEBUS_MHW/</code> <span
@@ -419,21 +419,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -524,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree537b9553e096f6fd191ff9e5c654a001001624cdtargetblank537b955a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtreed56567a61a8dde7f4ca74f93983c10463bcc7b7btargetblankd56567aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/537b9553e096f6fd191ff9e5c654a001001624cd" target="_blank">537b955</a>
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/d56567a61a8dde7f4ca74f93983c10463bcc7b7b" target="_blank">d56567a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree537b9553e096f6fd191ff9e5c654a001001624cdtargetblank537b955a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtreed56567a61a8dde7f4ca74f93983c10463bcc7b7btargetblankd56567aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -542,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/537b9553e096f6fd191ff9e5c654a001001624cd" target="_blank">537b955</a>.
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/d56567a61a8dde7f4ca74f93983c10463bcc7b7b" target="_blank">d56567a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -565,18 +562,6 @@ Ignored files:
 Untracked files:
     Untracked:  _Private/
     Untracked:  _refs/
-    Untracked:  analysis/data-download.Rmd
-    Untracked:  analysis/detect.Rmd
-    Untracked:  analysis/event-horizon.Rmd
-    Untracked:  analysis/graphs.Rmd
-    Untracked:  analysis/pred_DEM.qmd
-    Untracked:  analysis/pred_DEM_files/
-    Untracked:  code/map_theme.R
-    Untracked:  data/bbox.Rdata
-    Untracked:  output/BUS.dem
-
-Unstaged changes:
-    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -591,10 +576,73 @@ have uncommitted changes.
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/graphs.Rmd</code>) and HTML
+(<code>docs/graphs.html</code>) files. If you’ve configured a remote Git
+repository (see <code>?wflow_git_remote</code>), click on the hyperlinks
+in the table below to view the files as they were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajsmit/EXEBUS_MHW/blob/59a4f97eff7595124364734ccfe659a1a3035ade/analysis/graphs.Rmd" target="_blank">59a4f97</a>
+</td>
+<td>
+AJ Smit
+</td>
+<td>
+2023-03-30
+</td>
+<td>
+First commit
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajsmit/EXEBUS_MHW/59a4f97eff7595124364734ccfe659a1a3035ade/docs/graphs.html" target="_blank">59a4f97</a>
+</td>
+<td>
+AJ Smit
+</td>
+<td>
+2023-03-30
+</td>
+<td>
+First commit
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -718,6 +766,43 @@ sst_list &lt;- lapply(files, function(i) {
     subtitle = &quot;Composite SST&quot;) +
   theme_minimal() </code></pre>
 <p><img src="figure/graphs.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/ajsmit/EXEBUS_MHW/blob/59a4f97eff7595124364734ccfe659a1a3035ade/docs/figure/graphs.Rmd/unnamed-chunk-4-1.png" target="_blank">59a4f97</a>
+</td>
+<td>
+AJ Smit
+</td>
+<td>
+2023-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>NWA &lt;- fread(file = &quot;/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW/NWA_csv/NWA.csv&quot;)
 summary(NWA)</code></pre>
 <pre><code>      lon              lat              t                   temp      
@@ -754,7 +839,7 @@ attached base packages:
 other attached packages:
  [1] doMC_1.3.8               iterators_1.0.14         foreach_1.5.2           
  [4] tidyterra_0.4.0          terra_1.7-18             rnaturalearthhires_0.2.1
- [7] rnaturalearth_0.3.2      sf_1.0-9                 ggthemes_4.2.4          
+ [7] rnaturalearth_0.3.2      sf_1.0-12                ggthemes_4.2.4          
 [10] data.table_1.14.9        lubridate_1.9.2          forcats_1.0.0           
 [13] stringr_1.5.0            dplyr_1.1.1              purrr_1.0.1             
 [16] readr_2.1.4              tidyr_1.3.0              tibble_3.2.1            
@@ -762,22 +847,22 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] httr_1.4.5         sass_0.4.5         jsonlite_1.8.4     viridisLite_0.4.1 
- [5] bslib_0.4.2        getPass_0.2-2      highr_0.10         sp_1.6-0          
+ [5] bslib_0.4.2        getPass_0.2-2      sp_1.6-0           highr_0.10        
  [9] yaml_2.3.7         pillar_1.9.0       lattice_0.20-45    glue_1.6.2        
-[13] digest_0.6.31      promises_1.2.0.1   colorspace_2.1-0   htmltools_0.5.4   
+[13] digest_0.6.31      promises_1.2.0.1   colorspace_2.1-0   htmltools_0.5.5   
 [17] httpuv_1.6.9       pkgconfig_2.0.3    scales_1.2.1       processx_3.8.0    
 [21] whisker_0.4.1      later_1.3.0        tzdb_0.3.0         timechange_0.2.0  
 [25] git2r_0.31.0       proxy_0.4-27       generics_0.1.3     farver_2.1.1      
-[29] ellipsis_0.3.2     cachem_1.0.7       withr_2.5.0        cli_3.6.1         
-[33] magrittr_2.0.3     evaluate_0.20      ps_1.7.2           fs_1.6.1          
-[37] fansi_1.0.4        class_7.3-21       tools_4.2.2        hms_1.1.2         
-[41] lifecycle_1.0.3    munsell_0.5.0      callr_3.7.3        compiler_4.2.2    
-[45] jquerylib_0.1.4    e1071_1.7-13       rlang_1.1.0        classInt_0.4-9    
-[49] units_0.8-1        grid_4.2.2         rstudioapi_0.14    labeling_0.4.2    
-[53] rmarkdown_2.20     gtable_0.3.3       codetools_0.2-19   DBI_1.1.3         
-[57] R6_2.5.1           knitr_1.42         fastmap_1.1.1      utf8_1.2.3        
-[61] rprojroot_2.0.3    KernSmooth_2.23-20 stringi_1.7.12     Rcpp_1.0.10       
-[65] vctrs_0.6.1        tidyselect_1.2.0   xfun_0.37         </code></pre>
+[29] cachem_1.0.7       withr_2.5.0        cli_3.6.1          magrittr_2.0.3    
+[33] evaluate_0.20      ps_1.7.3           fs_1.6.1           fansi_1.0.4       
+[37] class_7.3-21       tools_4.2.2        hms_1.1.3          lifecycle_1.0.3   
+[41] munsell_0.5.0      callr_3.7.3        compiler_4.2.2     jquerylib_0.1.4   
+[45] e1071_1.7-13       rlang_1.1.0        classInt_0.4-9     units_0.8-1       
+[49] grid_4.2.2         rstudioapi_0.14    labeling_0.4.2     rmarkdown_2.21    
+[53] gtable_0.3.3       codetools_0.2-19   DBI_1.1.3          R6_2.5.1          
+[57] knitr_1.42         fastmap_1.1.1      utf8_1.2.3         rprojroot_2.0.3   
+[61] KernSmooth_2.23-20 stringi_1.7.12     Rcpp_1.0.10        vctrs_0.6.1       
+[65] tidyselect_1.2.0   xfun_0.38         </code></pre>
 </div>
 </div>
 
