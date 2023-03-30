@@ -1,0 +1,42 @@
+---
+title: "Detect events"
+author: "ajsmit"
+date: "2023-03-18"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+library(tidyverse)
+library(data.table)
+library(heatwaveR)
+library(parallel) # for mclapply
+detectCores(logical = FALSE)
+library(doMC); doMC::registerDoMC(cores = 8) # for plyr::ddply
+```
+
+```{r}
+csv_dir <- "/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW"
+files <- list.files(csv_dir, recursive = TRUE, pattern = '.csv',
+                    full.names = TRUE)
+file_list  <- as.list(files)
+names(files) <- tools::file_path_sans_ext(basename(files))
+
+detect_fun <- function(df) {
+  event <- detect_event(
+    ts2clm(
+      data = df, climatologyPeriod = c("1991-01-01", "2020-12-31")
+      )
+    )
+  return(event$event)
+}
+
+events <- mclapply(files, function(i) {
+  plyr::ddply(fread(i), .variables = c("lon", "lat"),
+              .fun = detect_fun, .parallel = TRUE)
+}, mc.cores = getOption("mc.cores", 8L))
+```
+

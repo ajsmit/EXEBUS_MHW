@@ -1,0 +1,163 @@
+---
+title: "MHW timelines for regions of interest"
+author: "AJ Smit"
+date: "2023-03-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+Analysis of the EXEBUS regions of interest. Analysis as follows:
+
+* Use OISST data
+* Calculate MHWs and MCSs
+* Plot timelines of MHWs and MCSs onto 'event lines' using flame plots
+* Analyse regions of interest as specified by Marek
+* This analysis has not yet removed the long-term linear trend
+
+## Set-up
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(data.table)
+library(lubridate)
+library(heatwaveR)
+library(ggthemes)
+
+source("../workshops/tangled_bank/R/extreme_event_horizon.R")
+load("data/bbox.Rdata")
+bbox
+```
+
+* **BC** --- Benguela Upwelling System
+* **ANG** --- Angola
+    * **ANG.C** Central Angola (upwelling)
+    * **ANG.N** Northern Angola (downwelling)
+* **GOG** --- Northern Gulf of Guinea
+    * **COG.CI** Cote d'Ivoire Box
+    * **COG.G** Ghana Box
+* **NWA** --- North-west Africa
+    * **NWA.SG** Southern Canary System, Senegal and Gambia
+    * **NWA.M** Northern Canary System, Northern Mauritania
+* **SEAS** --- South-eastern Arabian Sea (South-west coast of India)
+    * **SEAS.K** South-east Arabian Sea, Kerala upwelling cell
+
+```{r}
+csv_dir <- "/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW"
+files  <- as.list(list.files(csv_dir, recursive = TRUE, pattern = '.csv',
+                             full.names = TRUE))
+```
+
+# Angola
+
+```{r}
+ANG.C <- fread(files[[1]]) |> 
+  filter(between(lon, bbox["ANG.C", "lonmin"], bbox["ANG.C", "lonmax"]),
+         between(lat, bbox["ANG.C", "latmin"], bbox["ANG.C", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))
+
+ANG.N <- fread(files[[1]]) |> 
+  filter(between(lon, bbox["ANG.N", "lonmin"], bbox["ANG.N", "lonmax"]),
+         between(lat, bbox["ANG.N", "latmin"], bbox["ANG.N", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))  
+```
+
+```{r}
+ANG.C_events <- thresh_fun(ANG.C)
+ANG.N_events <- thresh_fun(ANG.N)
+```
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+#| message: false
+#| warning: false
+horizon_plot(ANG.C_events, title = "Extreme temperature timeline, Central Angola")
+horizon_plot(ANG.N_events, title = "Extreme temperature timeline, Northern Angola")
+```
+
+# Gulf of Guinea
+
+```{r}
+GOG.CI <- fread(files[[3]]) |> 
+  filter(between(lon, bbox["GOG.CI", "lonmin"], bbox["GOG.CI", "lonmax"]),
+         between(lat, bbox["GOG.CI", "latmin"], bbox["GOG.CI", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))
+
+GOG.G <- fread(files[[3]]) |> 
+  filter(between(lon, bbox["GOG.G", "lonmin"], bbox["GOG.G", "lonmax"]),
+         between(lat, bbox["GOG.G", "latmin"], bbox["GOG.G", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))  
+```
+
+```{r}
+GOG.CI_events <- thresh_fun(GOG.CI)
+GOG.G_events <- thresh_fun(GOG.G)
+```
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+#| message: false
+#| warning: false
+horizon_plot(GOG.CI_events, title = "Extreme temperature timeline, Cote d'Ivoire")
+horizon_plot(GOG.G_events, title = "Extreme temperature timeline, Ghana")
+```
+
+# Northwest Africa
+
+```{r}
+NWA.SG <- fread(files[[4]]) |> 
+  filter(between(lon, bbox["NWA.SG", "lonmin"], bbox["NWA.SG", "lonmax"]),
+         between(lat, bbox["NWA.SG", "latmin"], bbox["NWA.SG", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))
+
+NWA.M <- fread(files[[4]]) |> 
+  filter(between(lon, bbox["NWA.M", "lonmin"], bbox["NWA.M", "lonmax"]),
+         between(lat, bbox["NWA.M", "latmin"], bbox["NWA.M", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))  
+```
+
+```{r}
+NWA.SG_events <- thresh_fun(NWA.SG)
+NWA.M_events <- thresh_fun(NWA.M)
+```
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+#| message: false
+#| warning: false
+horizon_plot(NWA.SG_events, title = "Extreme temperature timeline, Senegal and Gambia")
+horizon_plot(NWA.M_events, title = "Extreme temperature timeline, Northern Mauritania")
+```
+
+# South-eastern Arabian Sea
+
+```{r}
+SEAS.K <- fread(files[[5]]) |> 
+  filter(between(lon, bbox["SEAS.K", "lonmin"], bbox["SEAS.K", "lonmax"]),
+         between(lat, bbox["SEAS.K", "latmin"], bbox["SEAS.K", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp))
+```
+
+```{r}
+SEAS.K_events <- thresh_fun(SEAS.K)
+```
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+#| message: false
+#| warning: false
+horizon_plot(SEAS.K_events, title = "Extreme temperature timeline, Kerala upwelling cell")
+```

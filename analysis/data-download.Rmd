@@ -1,0 +1,234 @@
+---
+title: "data-download"
+author: "ajsmit"
+date: "2023-03-16"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(reshape2)
+library(plyr)
+library(lubridate)
+library(stringr)
+library(tidync) # For easily dealing with NetCDF data
+library(rerddap) # For easily downloading subsets of data
+library(doParallel) # For parallel processing
+```
+
+
+Welcome to my website where I develop the research workflows for the EXEBUS Marine Heatwave (MHW), Marine Cold Spell (MCS), and Extreme Thermal Fluctuations (ETF) analysis.
+
+# Sourcing and downloading data
+
+Here I will define the study domains and describe the steps taken to acquire the data used in the ensuing analyses. Case Study 3 has several areas if interest corresponding to the following paper titles:
+
+# Title: Extreme events in the coastal jet current over the Agulhas Bank and West Coast
+
+* **BC** --- southern Benguela Current including retroflection
+    * west coast (St Helena Bay)
+    * Orange River bank
+    * the Agulhas retroflection
+
+# Title: Comparison of marine heatwaves between four tropical upwelling systems
+
+* **BC** --- Benguela Upwelling System
+* **ANG** --- Angola
+    * **ANG.C** Central Angola (upwelling)
+    * **ANG.N** Northern Angola (downwelling)
+* **GOG** --- Northern Gulf of Guinea
+    * **COG.CI** Cote d'Ivoire Box
+    * **COG.G** Ghana Box
+* **NWA** --- North-west Africa
+    * **NWA.SG** Southern Canary System, Senegal and Gambia
+    * **NWA.M** Northern Canary System, Northern Mauritania
+* **SEAS** --- South-eastern Arabian Sea (South-west coast of India)
+    * **SEAS.K** South-east Arabian Sea, Kerala upwelling cell
+
+# Set up bounding boxes
+
+```{r echo=FALSE, eval=TRUE}
+bbox <- as.data.frame(t(
+  data.frame(
+    BC = c(12.5, -42.5, 20, -25),
+    ANG  = c(10, -17, 14, -5.6),
+    ANG.C = c(13.3, -11.7, 13.7, -10.6),
+    ANG.N = c(12.6, -8.8, 13.15, -8.1),
+    GOG = c(-10.5, 0, 3.5, 7),
+    GOG.CI = c(-5, 4.2, -2.5, 4.8),
+    GOG.G = c(-1.3, 4.4, 0.8, 5.0),
+    NWA = c(-20.5, 12.5, -15.5, 24.5),
+    NWA.SG = c(-17.6, 13.3, -17.0, 14.3),
+    NWA.M = c(-17.5, 19.0, -16.8, 20.0),
+    SEAS = c(68.8, 9, 77, 16),
+    SEAS.K = c(75, 9.8, 75.9, 10.5),
+    row.names = c("lonmin", "latmin", "lonmax", "latmax")
+  )
+)) |>
+  select(lonmin, lonmax, latmin, latmax)
+save(bbox, file = "data/bbox.Rdata")
+```
+
+```{r}
+bbox
+```
+
+These regions were downloaded using the python script located at
+
+`/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/subset_dataset.py`
+
+using the following command line specification:
+
+**Benguela** (not used)
+
+`./subset_dataset.py -s 19810901 -f 20200405 -b 12.5 20 -42.5 -25 -x AVHRR_OI-NCEI-L4-GLOB-v2.0`
+`./subset_dataset.py -s 20200405 -f 20230314 -b 12.5 20 -42.5 -25 -x AVHRR_OI-NCEI-L4-GLOB-v2.1`
+
+**Angola** (not used)
+
+`./subset_dataset.py -s 19810901 -f 20200405 -b -20.5 -15.50 12.5 24.5 -x AVHRR_OI-NCEI-L4-GLOB-v2.0`
+`./subset_dataset.py -s 20200405 -f 20230314 -b -20.5 -15.50 12.5 24.5 -x AVHRR_OI-NCEI-L4-GLOB-v2.1`
+
+**Northern Gulf of Guinea** (not used)
+
+`./subset_dataset.py -s 19810901 -f 20200405 -b -10.5 3.50 0.0 7.0 -x AVHRR_OI-NCEI-L4-GLOB-v2.0`
+`./subset_dataset.py -s 20200405 -f 20230314 -b -10.5 3.50 0.0 7.0 -x AVHRR_OI-NCEI-L4-GLOB-v2.1`
+
+**North-west Africa** (not used)
+
+`./subset_dataset.py -s 19810901 -f 20200405 -b 10.0 14.00 -17.0 -5.6 -x AVHRR_OI-NCEI-L4-GLOB-v2.0`
+`./subset_dataset.py -s 20200405 -f 20230314 -b 10.0 14.00 -17.0 -5.6 -x AVHRR_OI-NCEI-L4-GLOB-v2.1`
+
+**South-eastern Arabian** (not used)
+
+`./subset_dataset.py -s 19810901 -f 20200405 -b 68.8 77.00 9.0 16.0 -x AVHRR_OI-NCEI-L4-GLOB-v2.0`
+`./subset_dataset.py -s 20200405 -f 20230314 -b 68.8 77.00 9.0 16.0 -x AVHRR_OI-NCEI-L4-GLOB-v2.1`
+
+# Check list of downloaded files for completeness
+
+Is the time series between the start and end dates complete? 
+
+```{r}
+date_fun <- function(nc_dir) {
+  
+  nc_list <- list.files(path = nc_dir, pattern = "*.nc",
+                        full.names = FALSE, include.dirs = FALSE)
+  strt_date <- as.Date(str_sub(nc_list[1], start = 1, end = 8),
+                       format = "%Y%m%d")
+  end_date <- as.Date(str_sub(nc_list[length(nc_list)], start = 1, end = 8),
+                      format = "%Y%m%d")
+  seq_dates <- data.frame(date = seq(strt_date, end_date, by = "day"))
+  nc_dates <- data.frame(date = as.Date(str_sub(nc_list, start = 1, end = 8),
+                                        format = "%Y%m%d"))
+  
+  subset(seq_dates, !(date %in% nc_dates$date))
+}
+```
+
+```{r}
+data_dir <- "/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW"
+nc_dir <- "/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW/Benguela"
+
+date_fun(nc_dir)
+```
+
+Some of the dates are missing---they are also absent from the server. Except for March 2023, it's not too serious.
+
+# Process nc files
+
+```{r eval=FALSE}
+# 0        1         2         3         4         5         6         7
+# 123456789012345678901234567890123456789012345678901234567890123456789012345
+# 19810901120000-NCEI-L4_GHRSST-SSTblend-AVHRR_OI-GLOB-v02.0-fv02.0_subset.nc
+
+# function to extract the dims and data from OISST netCDFs
+read_nc <- function(nc_file = nc_file, csv_dir = csv_dir,
+                    strt_date = strt_date, end_date = end_date) {
+  f_name_stem <- substr(basename(nc_file), 16, 58)
+  f_date <- substr(basename(nc_file), 1, 8)
+  nc <- nc_open(nc_file)
+  sst <- round(ncvar_get(nc, varid = "analysed_sst") - 273.15, 3)
+  dimnames(sst) <- list(lon = nc$dim$lon$vals,
+                        lat = nc$dim$lat$vals)
+  nc_close(nc)
+  sst <-
+    as.data.table(melt(sst, value.name = "temp"), row.names = NULL) %>%
+    mutate(t = ymd(f_date)) %>%
+    na.omit()
+  fwrite(sst,
+         file = paste0(csv_dir, "/", strt_date, "-",
+                       end_date, "-", f_name_stem, ".csv"),
+         append = TRUE, col.names = FALSE)
+  rm(sst)
+}
+```
+
+## Benguela region
+
+```{r eval=FALSE}
+csv_dir <- paste0(data_dir, "BC_csv")
+nc_list <- list.files(path = nc_dir, pattern = "*.nc", full.names = TRUE, include.dirs = TRUE)
+strt_date <- substr(basename(nc_list[1]), 1, 8)
+end_date <- substr(basename(nc_list[length(nc_list)]), 1, 8)
+
+system.time(llply(nc_list, read_nc, csv_dir = csv_dir,
+                  strt_date, end_date, .parallel = TRUE))
+```
+
+# rERDDAP download 
+
+```{r eval=FALSE}
+# Date download range by start and end dates per year
+dl_years <- data.frame(date_index = 1:6,
+                       start = as.Date(c("1982-01-01", "1990-01-01", "1998-01-01",
+                                         "2006-01-01", "2014-01-01", "2020-01-01")),
+                       end = as.Date(c("1989-12-31", "1997-12-31", "2005-12-31",
+                                       "2013-12-31", "2019-12-31", "2023-02-28")))
+```
+
+```{r eval=FALSE}
+# This function downloads and prepares data based on
+# user provided start and end dates
+OISST_sub_dl <- function(time_df, bbox_df, region) {
+  OISST_dat <- rerddap::griddap(datasetx = "ncdcOisst21Agg_LonPM180",
+                                url = "https://coastwatch.pfeg.noaa.gov/erddap/", 
+                                time = c(time_df$start, time_df$end), 
+                                zlev = c(0, 0),
+                                latitude = bbox_df[region, 3:4],
+                                longitude = bbox_df[region, 1:2],
+                                fields = "sst")$data %>% 
+    dplyr::mutate(time = base::as.Date(stringr::str_remove(time, "T12:00:00Z"))) %>% 
+    dplyr::rename(t = time, temp = sst, lon = longitude, lat = latitude) %>% 
+    dplyr::mutate(temp = round(temp, 2)) |> 
+    dplyr::select(lon, lat, t, temp) %>% 
+    stats::na.omit()
+}
+
+# Download all of the data with one nested request
+get_data <- function(region) {
+  
+  base::system.time(
+    OISST_data <- dl_years %>% 
+      dplyr::group_by(date_index) %>% 
+      dplyr::group_modify(~OISST_sub_dl(.x, bbox_df = bbox,
+                                        region = region)) %>% 
+      dplyr::ungroup() %>% 
+      dplyr::select(lon, lat, t, temp)
+  )
+  
+  fwrite(OISST_data, paste0(data_dir, "/", region, "_csv/", region, ".csv"))
+}
+```
+
+```{r eval=FALSE}
+# Apply the function to the regions one-by-one
+regions <- c("BC", "ANG", "GOG", "NWA", "SEAS")
+
+for(i in regions) {
+  get_data(i)
+}
+```
+
+

@@ -1,0 +1,257 @@
+---
+title: "Download and prepare a DEM for South Arrica, Namibia, and Angola"
+author: "AJ Smit"
+format: html
+---
+
+## Load stuff and set up environment
+
+```{r}
+library(tidyverse)
+library(raster)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(maptools)
+library(elevatr)
+library(terra) # for hillshade
+library(tidyterra)
+library(ggnewscale)
+
+source("../code/map_theme.R")
+
+# set_opentopo_key("cd52ef9b8b407a17fd417843e571fc27")
+```
+
+Get the Natural Earth country and coastline data. `ne_country()` will get both the country borders and the coastlines as vectors. `ne_coastline()` will only retrieve the coastline, here for the entire globe:
+
+```{r}
+# load Natural Earth data for the continent outlines and the countries
+BUS <- ne_countries(
+  sovereignty = c("South Africa", "Lesotho", "Namibia",
+                  "Angola", "Botswana", "Zambia"),
+  scale = "large",
+  returnclass = "sf"
+)
+class(BUS)
+# colnames(BUS)
+```
+
+Or, make a bounding box directly from full geographical extent of the area of interest---better if one seeks to also include ocean regions outside of national borders:
+
+```{r}
+xmin <- 8
+xmax <- 22.5
+ymin <- -38
+ymax <- -12.5
+BUS_bbox <- st_as_sfc(
+  st_bbox(c(
+    xmin = xmin, xmax = xmax, ymax = ymax, ymin = ymin),
+    crs = st_crs(4326))
+  )
+```
+
+We can also load the Natural Earth data for the coastlines, rivers, etc. (not used below):
+
+```{R}
+#| eval: false
+coastline <- ne_coastline(scale = "large", returnclass = "sf")
+class(coastline)
+
+# # get rivers + lakes
+rivers <- ne_download(scale = "large", type = "rivers_lake_centerlines",
+                      category = "physical", returnclass = "sf")
+
+lakes <- ne_download(scale = "large", type = "lakes", category = "physical",
+                     returnclass = "sf")
+```
+
+Prepare a DEM using the **elevatr** package. We use the previously defined `BUS` bbox **sf** object:
+
+```{r}
+#| eval: false
+BUS_dem <- get_elev_raster(
+  locations = BUS_bbox,
+  z = 7,
+  src = "srtm15plus",
+  clip = "bbox"
+)
+
+# keep for later and to prevent having to download each time
+save(BUS_dem, file = "../output/BUS.dem")
+```
+
+Load the data and set up colourmaps:
+
+```{r}
+# re-use previously downloaded dem
+load("../output/BUS.dem")
+
+# convert to terra
+BUS_terra <- rast(BUS_dem)
+
+# make dataframe from DEM raster
+BUS_df <- as.data.frame(BUS_terra, xy = TRUE, na.rm = TRUE)
+colnames(BUS_df)[3] <- "layer"
+
+# make a colourmap
+library(cmocean)
+cmap <- cmocean("topo")
+cols <- cmap(51)
+```
+
+A basic version of the figure:
+
+```{r}
+#| fig-cap: "A basic layered graph showing fish landings per coastal section (turquoise) and localities as reported (magenta)."
+#| fig_label: fig-map1
+
+ggplot() +
+  geom_sf(
+    data = BUS, colour = "grey60", fill = "grey50", linewidth = 0.4
+  ) +
+  coord_sf(xlim = c(xmin, xmax),
+           ylim = c(ymin, ymax),
+           expand = FALSE) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal()
+```
+
+A slightly more complex visualisation with topography and bathymetry (hypsometric) shading:
+
+```{r}
+#| fig-cap: "A layered topo/bathy graph showing fish landings per coastal section (turquoise) and localities as reported (magenta)."
+#| fig_label: fig-map2
+
+ggplot() +
+  geom_raster(
+    data = BUS_df, aes(x = x, y = y, fill = layer)
+  ) +
+  geom_sf( # coastline and country borders
+    data = BUS, colour = "grey60", fill = NA, linewidth = 0.4
+    ) +
+  scale_fill_gradientn(
+    colours = cols,
+    values = scales::rescale(c(min(BUS_df$layer), 0,
+                               max(BUS_df$layer))),
+    breaks = c(-4000, -2000, -1000, 0, 500, 1000, 2000),
+    name = "Elevation /\nDepth (m)"
+  ) +
+  scale_x_continuous(breaks = seq(8, 22, 4)) +  
+  coord_sf(
+    xlim = c(xmin, xmax),
+    ylim = c(ymin, ymax),
+    expand = FALSE
+    ) +
+  labs(x = NULL, y = NULL) +
+  theme_map()
+```
+
+Now I want to try hillshading the DEM:
+
+```{r}
+# create slope and hillshade
+BUS_slope <-
+  terra::terrain(x = BUS_terra, v = 'slope', unit = "radians")
+BUS_aspect <-
+  terra::terrain(x = BUS_terra, v = 'aspect', unit = "radians")
+BUS_hill_single <-
+  terra::shade(
+    BUS_slope,
+    BUS_aspect,
+    angle = 10,
+    direction = 260,
+    normalize = TRUE
+  )
+
+BUS_df_single <- as.data.frame(BUS_hill_single, xy = TRUE)
+
+# pass multiple directions to shade()
+BUS_hill_multi <- map(c(260, 15, 60, 330), function(dir) { 
+  shade(BUS_slope, BUS_aspect, 
+        angle = 10, 
+        direction = dir,
+        normalize = TRUE)}
+)
+
+BUS_hill_multi <- rast(BUS_hill_multi) %>% sum()
+
+BUS_df_multi <- as.data.frame(BUS_hill_multi, xy = TRUE)
+```
+
+Plot with single angles:
+
+```{r}
+ggplot() +
+  geom_raster(
+    data = BUS_df_single, aes(x = x, y = y, fill = lyr1)
+    ) +
+  scale_fill_distiller(palette = "Greys") +
+  geom_sf( # coastline and country borders
+    data = BUS, colour = "grey40", fill = "cornsilk",
+    linewidth = 0.3, alpha = 0.2
+  ) +
+  scale_x_continuous(breaks = seq(8, 22, 4)) +  
+  coord_sf(
+    xlim = c(xmin, xmax),
+    ylim = c(ymin, ymax),
+    expand = FALSE
+    ) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Drape a hypsometric colourmap over the landscape:
+
+```{r}
+# limits of bathy/topo colour scale
+zmin <- -5500
+zmax <- 2500
+
+ggplot() +
+  geom_raster(
+    data = na.omit(BUS_df_single),
+    aes(x = x, y = y, fill = lyr1),
+    show.legend = FALSE
+    ) +
+  scale_fill_gradient(
+    low = "black", high = "white"
+    ) +
+  new_scale_fill() +
+  geom_raster(
+    data = na.omit(BUS_df),
+    aes(x = x, y = y, fill = layer),
+    alpha = 0.3
+    ) +
+  scale_fill_hypso_tint_c(
+    palette = "gmt_globe",
+    limits = c(zmin, zmax),
+    values = scales::rescale(c(zmin, 0, zmax)),
+    breaks = c(-5000, -3000, -2000, -500, 0, 500, 1000, 1500, 2000),
+    labels = scales::label_number(),
+    guide = guide_colorbar(
+      direction = "vertical",
+      title.position = "top",
+      barwidth = 1,
+      barheight = 14
+    )
+  ) +
+  geom_sf( # coastline and country borders
+    data = BUS, colour = "grey40", fill = NA, linewidth = 0.3
+  ) +
+  scale_x_continuous(breaks = seq(8, 22, 4)) +  
+  coord_sf(
+    xlim = c(xmin, xmax),
+    ylim = c(ymin, ymax),
+    expand = FALSE
+    ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Depth/\nElevation (m)",
+    title = "EXEBUS region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
