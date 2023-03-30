@@ -12,4 +12,30 @@ Welcome to my website where I develop the research workflows for the EXEBUS Mari
 
 # Sourcing and downloading data
 
-Here I will describe the steps taken to acquire the data used in the ensuing analyses.
+Here I will define the study domains and describe the steps taken to acquire the data used in the ensuing analyses. Case Study 3 has several areas if interest corresponding to the following paper titles, so I download one large area to enclose them all using the python script.
+
+The bounding box is 12.5°E to 20°E and -42.5°S to -25°S.
+
+```{r}
+lonmin <- 12.5
+lonmax <- 20
+latmin <- 42.5
+latmax <- -25
+```
+
+See /Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW
+
+> ./subset_dataset.py -s 19810901 -f 20200405 -b 12.5 20 -42.5 -25 -x AVHRR_OI-NCEI-L4-GLOB-v2.0
+> ./subset_dataset.py -s 20200406 -f 20230314 -b 12.5 20 -42.5 -25 -x AVHRR_OI-NCEI-L4-GLOB-v2.1
+
+## Extreme events in the coastal jet current over the Agulhas Bank and West Coast
+
+* west coast (St Helena Bay)
+* Orange River bank
+* the Agulhas retroflection
+
+## Comparison of marine heatwaves between four tropical upwelling systems
+
+# Another heading
+
+

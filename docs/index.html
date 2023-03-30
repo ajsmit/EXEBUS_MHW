@@ -13,7 +13,7 @@
 
 <title>The Analysis Starts Here</title>
 
-<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -35,6 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -339,7 +341,13 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/ajsmit/EXEBUS_MHW">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -357,7 +365,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -368,8 +376,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -378,13 +386,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-01-02
+<strong>Last updated:</strong> 2023-03-30
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>EXEBUS_MHW/</code> <span
@@ -407,33 +415,120 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree78f645c9d35f86fd60f8d27e8ba2b6d9c46843d5targetblank78f645ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20230102code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20230102)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20230102code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20230102)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree537b9553e096f6fd191ff9e5c654a001001624cdtargetblank537b955a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/78f645c9d35f86fd60f8d27e8ba2b6d9c46843d5" target="_blank">78f645c</a>
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/537b9553e096f6fd191ff9e5c654a001001624cd" target="_blank">537b955</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree78f645c9d35f86fd60f8d27e8ba2b6d9c46843d5targetblank78f645ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomajsmitEXEBUSMHWtree537b9553e096f6fd191ff9e5c654a001001624cdtargetblank537b955a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -443,7 +538,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/78f645c9d35f86fd60f8d27e8ba2b6d9c46843d5" target="_blank">78f645c</a>.
+<a href="https://github.com/ajsmit/EXEBUS_MHW/tree/537b9553e096f6fd191ff9e5c654a001001624cd" target="_blank">537b955</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -458,8 +553,26 @@ were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/pred_DEM.html
+
+Untracked files:
+    Untracked:  _Private/
+    Untracked:  _refs/
+    Untracked:  analysis/data-download.Rmd
+    Untracked:  analysis/detect.Rmd
+    Untracked:  analysis/event-horizon.Rmd
+    Untracked:  analysis/graphs.Rmd
+    Untracked:  analysis/pred_DEM.qmd
+    Untracked:  analysis/pred_DEM_files/
+    Untracked:  code/map_theme.R
+    Untracked:  data/bbox.Rdata
+    Untracked:  output/BUS.dem
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -504,6 +617,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajsmit/EXEBUS_MHW/61b1ffae9b8084de66a42dce94552c55ea7a9878/docs/index.html" target="_blank">61b1ffa</a>
+</td>
+<td>
+ajsmit
+</td>
+<td>
+2023-01-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -584,8 +714,80 @@ EXEBUS Marine Heatwave (MHW), Marine Cold Spell (MCS), and Extreme
 Thermal Fluctuations (ETF) analysis.</p>
 <div id="sourcing-and-downloading-data" class="section level1">
 <h1>Sourcing and downloading data</h1>
-<p>Here I will describe the steps taken to acquire the data used in the
-ensuing analyses.</p>
+<p>Here I will define the study domains and describe the steps taken to
+acquire the data used in the ensuing analyses. Case Study 3 has several
+areas if interest corresponding to the following paper titles, so I
+download one large area to enclose them all using the python script.</p>
+<p>The bounding box is 12.5°E to 20°E and -42.5°S to -25°S.</p>
+<pre class="r"><code>lonmin &lt;- 12.5
+lonmax &lt;- 20
+latmin &lt;- 42.5
+latmax &lt;- -25</code></pre>
+<p>See /Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW</p>
+<blockquote>
+<p>./subset_dataset.py -s 19810901 -f 20200405 -b 12.5 20 -42.5 -25 -x
+AVHRR_OI-NCEI-L4-GLOB-v2.0 ./subset_dataset.py -s 20200406 -f 20230314
+-b 12.5 20 -42.5 -25 -x AVHRR_OI-NCEI-L4-GLOB-v2.1</p>
+</blockquote>
+<div
+id="extreme-events-in-the-coastal-jet-current-over-the-agulhas-bank-and-west-coast"
+class="section level2">
+<h2>Extreme events in the coastal jet current over the Agulhas Bank and
+West Coast</h2>
+<ul>
+<li>west coast (St Helena Bay)</li>
+<li>Orange River bank</li>
+<li>the Agulhas retroflection</li>
+</ul>
+</div>
+<div
+id="comparison-of-marine-heatwaves-between-four-tropical-upwelling-systems"
+class="section level2">
+<h2>Comparison of marine heatwaves between four tropical upwelling
+systems</h2>
+</div>
+</div>
+<div id="another-heading" class="section level1">
+<h1>Another heading</h1>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.2 (2022-10-31)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Ventura 13.2.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] workflowr_1.7.0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.10      compiler_4.2.2   pillar_1.9.0     bslib_0.4.2     
+ [5] later_1.3.0      git2r_0.31.0     jquerylib_0.1.4  tools_4.2.2     
+ [9] getPass_0.2-2    digest_0.6.31    jsonlite_1.8.4   evaluate_0.20   
+[13] lifecycle_1.0.3  tibble_3.2.1     pkgconfig_2.0.3  rlang_1.1.0     
+[17] cli_3.6.1        rstudioapi_0.14  yaml_2.3.7       xfun_0.37       
+[21] fastmap_1.1.1    httr_1.4.5       stringr_1.5.0    knitr_1.42      
+[25] fs_1.6.1         vctrs_0.6.1      sass_0.4.5       rprojroot_2.0.3 
+[29] glue_1.6.2       R6_2.5.1         processx_3.8.0   fansi_1.0.4     
+[33] rmarkdown_2.20   callr_3.7.3      magrittr_2.0.3   whisker_0.4.1   
+[37] ps_1.7.2         promises_1.2.0.1 htmltools_0.5.4  httpuv_1.6.9    
+[41] utf8_1.2.3       stringi_1.7.12   cachem_1.0.7    </code></pre>
+</div>
 </div>
 
 
