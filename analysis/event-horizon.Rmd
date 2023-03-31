@@ -1,11 +1,17 @@
 ---
-title: "MHW timelines for regions of interest"
 author: "AJ Smit"
-date: "2023-03-30"
-output: workflowr::wflow_html
-editor_options:
-  chunk_output_type: console
+date: "`r Sys.Date()`"
+title: "MHW timelines for regions of interest"
+subtitle: "Visualisation of extreme temperature events"
+output:
+  pdf_document: 
+    fig_caption: yes
+    latex_engine: xelatex
+    highlight: pygments
+  html_document_base: default
+  workflowr::wflow_html: default
 ---
+
 
 Analysis of the EXEBUS regions of interest. Analysis as follows:
 
@@ -26,14 +32,19 @@ library(lubridate)
 library(heatwaveR)
 library(ggthemes)
 
-source("../workshops/tangled_bank/R/extreme_event_horizon.R")
-load("data/bbox.Rdata")
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthhires)
+
+source("/Users/ajsmit/Documents/R/workshops/tangled_bank/R/extreme_event_horizon.R")
+source("../data/bboxes.R")
 bbox
 ```
 
 * **BC** --- Benguela Upwelling System
 * **ANG** --- Angola
     * **ANG.C** Central Angola (upwelling)
+    * **ANG.ABF** Angola-Benguela Front
     * **ANG.N** Northern Angola (downwelling)
 * **GOG** --- Northern Gulf of Guinea
     * **COG.CI** Cote d'Ivoire Box
@@ -50,25 +61,101 @@ files  <- as.list(list.files(csv_dir, recursive = TRUE, pattern = '.csv',
                              full.names = TRUE))
 ```
 
-# Angola
+## Functions
 
 ```{r}
-ANG.C <- fread(files[[1]]) |> 
-  filter(between(lon, bbox["ANG.C", "lonmin"], bbox["ANG.C", "lonmax"]),
-         between(lat, bbox["ANG.C", "latmin"], bbox["ANG.C", "latmax"])) |> 
-  dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))
+bbox_fun <- function(region) {
+  coords <- matrix(c(bbox[region, "lonmin"], bbox[region, "latmin"],
+                     bbox[region, "lonmax"], bbox[region, "latmin"],
+                     bbox[region, "lonmax"], bbox[region, "latmax"],
+                     bbox[region, "lonmin"], bbox[region, "latmax"],
+                     bbox[region, "lonmin"], bbox[region, "latmin"]), ncol = 2, byrow = TRUE)
+  
+  bbox_poly <- st_polygon(list(coords))
+  bbox_sf <- st_sfc(bbox_poly, crs = WGS84_proj)
+  return(bbox_sf)
+}
+```
 
+## Prepare map data
+
+```{r}
+WGS84_proj <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+world <- ne_countries(returnclass = 'sf',
+  scale = 10, type = "countries") |> 
+  select(continent, sovereignt, iso_a3) |> 
+  st_break_antimeridian(lon_0 = 10) |>
+  st_transform(WGS84_proj) |> 
+  group_by(continent) |>
+  summarise()
+```
+
+## Angola
+
+```{r}
+ANG_bbox <- bbox_fun("ANG")
+ANG.N_bbox <- bbox_fun("ANG.N")
+ANG.C_bbox <- bbox_fun("ANG.C")
+ANG.ABF_bbox <- bbox_fun("ANG.ABF")
+ANG.Hov_bbox <- bbox_fun("ANG.Hov")
+
+roi_cropped <- world |> 
+  st_crop(ANG_bbox)
+```
+
+```{r}
+ANG <- fread(files[[1]]) |> 
+  filter(between(t, "2011-02-01", "2011-02-28")) |> 
+  dplyr::mutate(temp = temp - mean(temp)) |> 
+  dplyr::group_by(lon, lat) |> 
+  dplyr::summarise(temp = mean(temp), .groups = "drop")  
+```
+
+```{r fig.align = 'center'}
+ggplot() +
+  geom_raster(data = ANG, aes(x = lon, y = lat, fill = temp)) +
+  geom_sf(data = roi_cropped, colour = "#0070C0", fill = "grey70") +
+  geom_sf(data = ANG.C_bbox, fill = NA, colour = "turquoise", linewidth = 0.5) +
+  geom_sf(data = ANG.Hov_bbox, fill = NA, colour = "grey80", linewidth = 0.5) +
+  geom_sf(data = ANG.ABF_bbox, fill = NA, colour = "pink", linewidth = 0.5) +
+  geom_sf(data = ANG.N_bbox, fill = NA, colour = "green", linewidth = 0.3) +
+  geom_label(data = bbox[3:6,],
+            aes(lonmax, latmax,
+                label = c("C", "ABF", "N", "Hov")),
+            colour = "black", size = 2.8) +
+  scale_y_continuous(breaks = seq(-16, -6, by = 2)) + 
+  scale_x_continuous(breaks = seq(10, 14, by = 2)) +
+  labs(x = NULL, y = NULL,
+       title = "Angolan\nregions",
+       subtitle = NULL) +
+  theme_minimal() 
+```
+
+```{r}
 ANG.N <- fread(files[[1]]) |> 
   filter(between(lon, bbox["ANG.N", "lonmin"], bbox["ANG.N", "lonmax"]),
          between(lat, bbox["ANG.N", "latmin"], bbox["ANG.N", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))  
+  dplyr::summarise(temp = mean(temp), .groups = "drop")  
+
+ANG.C <- fread(files[[1]]) |> 
+  filter(between(lon, bbox["ANG.C", "lonmin"], bbox["ANG.C", "lonmax"]),
+         between(lat, bbox["ANG.C", "latmin"], bbox["ANG.C", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
+
+ANG.ABF <- fread(files[[1]]) |> 
+  filter(between(lon, bbox["ANG.ABF", "lonmin"], bbox["ANG.ABF", "lonmax"]),
+         between(lat, bbox["ANG.ABF", "latmin"], bbox["ANG.ABF", "latmax"])) |> 
+  dplyr::group_by(t) |> 
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
 ```
 
 ```{r}
-ANG.C_events <- thresh_fun(ANG.C)
 ANG.N_events <- thresh_fun(ANG.N)
+ANG.C_events <- thresh_fun(ANG.C)
+ANG.ABF_events <- thresh_fun(ANG.ABF)
 ```
 
 ```{r}
@@ -76,24 +163,76 @@ ANG.N_events <- thresh_fun(ANG.N)
 #| fig-width: 8
 #| message: false
 #| warning: false
-horizon_plot(ANG.C_events, title = "Extreme temperature timeline, Central Angola")
 horizon_plot(ANG.N_events, title = "Extreme temperature timeline, Northern Angola")
+horizon_plot(ANG.C_events, title = "Extreme temperature timeline, Central Angola")
+horizon_plot(ANG.ABF_events, title = "Extreme temperature timeline, Angola-Benguela Front")
+```
+
+Hovmöller diagramme of the region ('Hov') indicated on the map:
+
+```{r}
+ANG.Hov <- fread(files[[1]]) |> 
+  filter(between(lon, bbox["ANG.Hov", "lonmin"], bbox["ANG.Hov", "lonmax"]),
+         between(lat, bbox["ANG.Hov", "latmin"], bbox["ANG.Hov", "latmax"])) |> 
+  dplyr::group_by(t, lat) |> 
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
+```
+
+```{r}
+ANG.Hov_events <- plyr::ddply(.data = ANG.Hov, .variables = c("lat"),
+                              .fun = thresh_fun, .parallel = TRUE) |> 
+  filter(between(t, "2010-01-01", "2011-12-31")) |> 
+  mutate(lat = as_factor(lat))
+```
+
+```{r}
+#| fig-height: 12
+#| fig-width: 8
+#| message: false
+#| warning: false
+hovmoller_horizon_plot(ANG.Hov_events, title = "Extreme temperature timeline, Angola")
 ```
 
 # Gulf of Guinea
+
+```{r}
+GOG_bbox <- bbox_fun("GOG")
+GOG.G_bbox <- bbox_fun("GOG.G")
+GOG.CI_bbox <- bbox_fun("GOG.CI")
+
+roi_cropped <- world |> 
+  st_crop(GOG_bbox)
+```
+
+```{r fig.align = 'center'}
+ggplot() +
+  geom_sf(data = roi_cropped, colour = "#0070C0", fill = "grey70") +
+  geom_sf(data = GOG.CI_bbox, fill = NA, colour = "turquoise", linewidth = 0.5) +
+  geom_sf(data = GOG.G_bbox, fill = NA, colour = "green", linewidth = 0.3) +
+  geom_label(data = bbox[8:9,],
+            aes(lonmax, latmax,
+                label = c("CI", "G")),
+            colour = "black", size = 2.8) +
+  scale_y_continuous(breaks = seq(0, 6, by = 2)) + 
+  scale_x_continuous(breaks = seq(-10, 2, by = 2)) +
+  labs(x = NULL, y = NULL,
+       title = "Gulf of Guinea",
+       subtitle = NULL) +
+  theme_minimal() 
+```
 
 ```{r}
 GOG.CI <- fread(files[[3]]) |> 
   filter(between(lon, bbox["GOG.CI", "lonmin"], bbox["GOG.CI", "lonmax"]),
          between(lat, bbox["GOG.CI", "latmin"], bbox["GOG.CI", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
 
 GOG.G <- fread(files[[3]]) |> 
   filter(between(lon, bbox["GOG.G", "lonmin"], bbox["GOG.G", "lonmax"]),
          between(lat, bbox["GOG.G", "latmin"], bbox["GOG.G", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))  
+  dplyr::summarise(temp = mean(temp), .groups = "drop")  
 ```
 
 ```{r}
@@ -113,17 +252,45 @@ horizon_plot(GOG.G_events, title = "Extreme temperature timeline, Ghana")
 # Northwest Africa
 
 ```{r}
+NWA_bbox <- bbox_fun("NWA")
+NWA.SG_bbox <- bbox_fun("NWA.SG")
+NWA.M_bbox <- bbox_fun("NWA.M")
+NWA.Hov_bbox <- bbox_fun("NWA.Hov")
+
+roi_cropped <- world |> 
+  st_crop(NWA_bbox)
+```
+
+```{r fig.align = 'center'}
+ggplot() +
+  geom_sf(data = roi_cropped, colour = "#0070C0", fill = "grey70") +
+  geom_sf(data = NWA.SG_bbox, fill = NA, colour = "turquoise", linewidth = 0.5) +
+  geom_sf(data = NWA.Hov_bbox, fill = NA, colour = "grey80", linewidth = 0.5) +
+  geom_sf(data = NWA.M_bbox, fill = NA, colour = "pink", linewidth = 0.5) +
+  geom_label(data = bbox[11:13,],
+            aes(lonmax, latmax,
+                label = c("SG", "M", "Hov")),
+            colour = "black", size = 2.8) +
+  scale_y_continuous(breaks = seq(14, 24, by = 2)) +
+  scale_x_continuous(breaks = seq(-20, -16, by = 2)) + 
+  labs(x = NULL, y = NULL,
+       title = "Canary\nregions",
+       subtitle = NULL) +
+  theme_minimal() 
+```
+
+```{r}
 NWA.SG <- fread(files[[4]]) |> 
   filter(between(lon, bbox["NWA.SG", "lonmin"], bbox["NWA.SG", "lonmax"]),
          between(lat, bbox["NWA.SG", "latmin"], bbox["NWA.SG", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
 
 NWA.M <- fread(files[[4]]) |> 
   filter(between(lon, bbox["NWA.M", "lonmin"], bbox["NWA.M", "lonmax"]),
          between(lat, bbox["NWA.M", "latmin"], bbox["NWA.M", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))  
+  dplyr::summarise(temp = mean(temp), .groups = "drop")  
 ```
 
 ```{r}
@@ -140,14 +307,63 @@ horizon_plot(NWA.SG_events, title = "Extreme temperature timeline, Senegal and G
 horizon_plot(NWA.M_events, title = "Extreme temperature timeline, Northern Mauritania")
 ```
 
+Hovmöller diagramme of the region ('Hov') indicated on the map:
+
+```{r}
+NWA.Hov <- fread(files[[4]]) |> 
+  filter(between(lon, bbox["NWA.Hov", "lonmin"], bbox["NWA.Hov", "lonmax"]),
+         between(lat, bbox["NWA.Hov", "latmin"], bbox["NWA.Hov", "latmax"])) |> 
+  dplyr::group_by(t, lat) |> 
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
+```
+
+```{r}
+NWA.Hov_events <- plyr::ddply(.data = NWA.Hov, .variables = c("lat"),
+                              .fun = thresh_fun, .parallel = TRUE) |> 
+  filter(between(t, "2010-01-01", "2011-12-31")) |> 
+  mutate(lat = as_factor(lat))
+```
+
+```{r}
+#| fig-height: 12
+#| fig-width: 8
+#| message: false
+#| warning: false
+hovmoller_horizon_plot(NWA.Hov_events, title = "Extreme temperature timeline, Canary")
+```
+
 # South-eastern Arabian Sea
+
+```{r}
+SEAS_bbox <- bbox_fun("SEAS")
+SEAS.K_bbox <- bbox_fun("SEAS.K")
+
+roi_cropped <- world |> 
+  st_crop(SEAS_bbox)
+```
+
+```{r fig.align = 'center'}
+ggplot() +
+  geom_sf(data = roi_cropped, colour = "#0070C0", fill = "grey70") +
+  geom_sf(data = SEAS.K_bbox, fill = NA, colour = "green", linewidth = 0.3) +
+  geom_label(data = bbox[15,],
+            aes(lonmax, latmax,
+                label = c("K")),
+            colour = "black", size = 2.8) +
+  scale_y_continuous(breaks = seq(10, 14, by = 2)) + 
+  scale_x_continuous(breaks = seq(70, 76, by = 2)) +
+  labs(x = NULL, y = NULL,
+       title = "Southeast Arabian Sea",
+       subtitle = NULL) +
+  theme_minimal() 
+```
 
 ```{r}
 SEAS.K <- fread(files[[5]]) |> 
   filter(between(lon, bbox["SEAS.K", "lonmin"], bbox["SEAS.K", "lonmax"]),
          between(lat, bbox["SEAS.K", "latmin"], bbox["SEAS.K", "latmax"])) |> 
   dplyr::group_by(t) |> 
-  dplyr::summarise(temp = mean(temp))
+  dplyr::summarise(temp = mean(temp), .groups = "drop")
 ```
 
 ```{r}

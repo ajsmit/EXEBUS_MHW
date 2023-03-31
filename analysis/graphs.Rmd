@@ -76,10 +76,3 @@ ggplot() +
     subtitle = "Composite SST") +
   theme_minimal() 
 ```
-
-```{r}
-NWA <- fread(file = "/Volumes/OceanData/AVHRR_OI-NCEI-L4-GLOB-v2.0/EXEBUS_MHW/NWA_csv/NWA.csv")
-summary(NWA)
-```
-
-
